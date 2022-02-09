@@ -3,7 +3,7 @@
 이를 통해 솔리디티 버전을 선언하여 새로운 컴파일러 버전이 나와도 기존 코드가 깨지지 않게 한다.
 */
 
-pragma solidity ^0.8.11;
+pragma solidity >=0.4.22 <0.9;
 
 /*
 솔리디티 코드는 컨트랙트 안에 싸여 있다.
@@ -52,6 +52,12 @@ contract ZombieFactory {
     */
     Zombie[] public zombies;
 
+    /*
+    event 키워드를 사용하여 이벤트를 만들 수 있다.
+
+    */
+    event NewZombie(uint zombieId, string name, uint dna);
+
     /* 
     함수의 매개변수의 경우 언더스코어(_)로 시작을 하여 전역 변수와 구별하는 게 관례이다.
     이때 함수는 기본적으로 public으로 선언이 되어 있는데 private 키워드를 사용해서 private하게 바꿀 수 있다. (public인 경우도 명시적으로 작성을 해줘야 한다.)
@@ -64,9 +70,39 @@ contract ZombieFactory {
     솔리디티에는 storage와 memory 개념이 존재한다. 이는 변수를 저장할 수 있는 공간을 의미한다.
     storage의 경우 블록체인 상에서 영구 저장되는 개념이며 memory의 경우 임시적으로 저장되어서 호출이 발생할 때마다 초기화된다.
 
-    구조체와 배열을 선언할 때 명시적으로 선언해야 해서 아래 
+    구조체와 배열을 선언할 때 명시적으로 선언해야 해서 아래 string 자료형의 _name이라는 변수에 memory 키워드를 사용했다.
     */
     function _createZombie(string memory _name, uint _dna) private {
         zombies.push(Zombie(_dna, _name));
+        uint id = zombies.length - 1;
+        emit NewZombie(id, _name, _dna);
     }
+
+    /*
+    함수에 반환값을 지정해주기 위해서는 returns 키워드를 사용해야 한다. 이때 함수 제어자의 종류로는 크게 view와 pure가 있다.
+    view 함수의 경우 함수가 데이터를 보기만 하고 변경하지 않는다는 의미다.
+    pure 함수의 경우 함수가 애플리케이션 내의 어떤 데이터도 접근하지 않는 것을 의미한다.
+    */
+    function _generateRandomDna(string memory _str) private view returns(uint) {
+        /*
+        이더리움은 SHA3의 한 버전인 keccak256를 내장 해시 함수로 가지고 있다.
+        해시 함수는 기본적으로 입력 문자열을 무작위 256비트 16진수로 매핑하는데 조금의 변확만 존재하더라도 그 값이 크게 바뀐다.
+        블로체인에서 안전한 의사 난수를 만드는 방법은 매우 어려운 문제 중 하나로 항상 주의해야 한다.
+
+        이때 keccak256 내장 해시 함수는 인자로 bytes를 받아야 하기 때문에 abi.encode 메서드를 활용하여 string 자료형을 bytes로 변환하였다.
+        */
+        uint rand = uint(keccak256(abi.encode(_str)));
+        return rand % dnaModulus;
+    }
+
+    function createRandomZombie(string memory _name) public {
+        uint randDna = _generateRandomDna(_name);
+        _createZombie(_name, randDna);
+    }
+
+    /*
+    이벤트는 애플리케이션의 사용자 단에서 어떤 행동이 발생했을 때 컨트랙트가 블록체인 상에서 이와 의사소통하는 방법이다.
+    컨트랙트는 특정 이벤트가 일어나는 지 확인하고 발생하면 행동을 취한다.
+
+    */
 }
