@@ -1,8 +1,11 @@
 /*
 모든 솔리디티 소스 코드는 Version Pragma로 시작해야 한다.
 이를 통해 솔리디티 버전을 선언하여 새로운 컴파일러 버전이 나와도 기존 코드가 깨지지 않게 한다.
-*/
 
+또한 SPDX-License-Identifier를 첫 줄에 작성하여 컨트랙트가 라이선스를 함께 빌드할 수 있게 알려줘야 한다.
+굳이 작성하지 않아도 되는, 오류가 아닌 주의사항이지만 0.6.8 버전 이후 생긴 방식이기 때문에 작성하는 걸 추천한다.
+*/
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9;
 
 /*
@@ -53,8 +56,11 @@ contract ZombieFactory {
     Zombie[] public zombies;
 
     /*
-    event 키워드를 사용하여 이벤트를 만들 수 있다.
+    이벤트는 애플리케이션의 사용자 단에서 어떤 행동이 발생했을 때 컨트랙트가 블록체인 상에서 이와 의사소통하는 방법이다.
+    컨트랙트는 특정 이벤트가 일어나는 지 확인하고 해당 이벤트가 발생하면 행동을 취한다.
 
+    event 키워드를 사용하여 이벤트를 만들 수 있다.
+    해당 이벤트는 자바스크립트에서의 이벤트리스너와 유사하다고 생각하면 된다.
     */
     event NewZombie(uint zombieId, string name, uint dna);
 
@@ -74,7 +80,12 @@ contract ZombieFactory {
     */
     function _createZombie(string memory _name, uint _dna) private {
         zombies.push(Zombie(_dna, _name));
+        // 기존에는 push() 메서드의 반환값이 해당 배열의 길이였지만 이제는 길이를 반환하지 않기 때문에 별도의 length 메서드를 따로 써줘야 한다.
         uint id = zombies.length - 1;
+        /*
+        emit 키워드를 사용하여 명시적으로 이벤트를 발생시키는 걸 알려준다.
+        해당 코드를 통해 _createZombie() 함수가 실행되었을 때 아래 NewZombie() 실행된다.
+        */
         emit NewZombie(id, _name, _dna);
     }
 
@@ -99,10 +110,4 @@ contract ZombieFactory {
         uint randDna = _generateRandomDna(_name);
         _createZombie(_name, randDna);
     }
-
-    /*
-    이벤트는 애플리케이션의 사용자 단에서 어떤 행동이 발생했을 때 컨트랙트가 블록체인 상에서 이와 의사소통하는 방법이다.
-    컨트랙트는 특정 이벤트가 일어나는 지 확인하고 발생하면 행동을 취한다.
-
-    */
 }
