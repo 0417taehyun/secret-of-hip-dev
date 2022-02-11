@@ -108,11 +108,11 @@ contract ZombieFactory {
     but it is not possible to just access arbitrary elements deeper in the stack without first removing the top of the stack.
 
     요약하자면 다음과 같다.
-    Storage의 경우 함수 호출과 트랜잭션 사이에서 영구적인 데이터 영역이다.
-    Memory의 경우 각 메세지 호출 때마다 컨트랙트가 얻게 되는 새로운 인스턴스다.
+    Storage의 경우 함수 호출과 트랜잭션 사이에서 영구적인 데이터 영역이다. 다시 말해 블록체인에 존재하는 상태 변수이다.
+    Memory의 경우 각 메세지 호출 때마다 컨트랙트가 얻게 되는 새로운 인스턴스다. 다시 말해 함수가 불러진 동안만 메모리에 존재하는 지역변수라 생각하면 편하다.
     Stack은 EVM 자체가 스택 기반의 머신이기 때문에 내부적으로 처음 올라가는 메모리다.
 
-    이외에도 Calldata 종류가 존재하는데 External Function의 매개변수로 사용된다.
+    이외에도 Calldata 종류가 존재하는데 외부함수로만 이용이 가능하다. memory와 유사하다.
     */
     function _createZombie(string memory _name, uint _dna) private {
         zombies.push(Zombie(_dna, _name));
@@ -148,11 +148,32 @@ contract ZombieFactory {
 
         이때 keccak256 내장 해시 함수는 인자로 bytes를 받아야 하기 때문에 abi.encode 메서드를 활용하여 string 자료형을 bytes로 변환하였다.
 
-        abi.encode 외에도 abi.encodePAcked, abi.encodeWithSignature, abi.encodeWithSelector와 같이 3개의 종류가 더 존재한다. 각각의 차이점은 아래와 같다.
-        
+        abi.encode 외에도 abi.encodePAcked, abi.encodeWithSignature, abi.encodeWithSelector와 같이 3개의 종류가 더 존재한다.
+        각각의 차이점은 언급하기 이전 ABI(Application Binary Inteface)에 관해 먼저 알아볼 필요가 있다.
 
+        ABI는 두 프로그램 모듈의 인터페이스 역할을 하고 하나는 기계어 레벨에 존재하여 데이터를 기계어로 인코딩/디코딩하기 위해 존재한다.
+        이더리움에서 EVM을 통해 컨트랙트를 호출할 때 인코딩을 하거나 트랜잭션으로부터 데이터를 읽을 때 사용한다.
+        
+        또한 ABI는 컨트랙트 내의 함수를 호출하거나 컨트랙트로부터 데이터를 얻는 방법이다.
+        이더리움 스마트 컨트랙트는 이더리움 블록체인에 배포된 바이트코드로 컨트랙트 내에 여러 개의 함수가 존재하기 때문에 ABI가 어떤 함수를 호출할 지 지정하는데 필요하다.
+        이는 개발자가 생각한 대로 함수가 데이터를 반환하는 결과를 보장하기 위해서 반드시 필요하다.
+
+        해당 네 메서드의 차이점은 아래와 같다.
+        abi.encode 메서드의 경우 매개변수로 ABI 스펙을 사용한다. 따라서 주로 컨트랙트를 호출할 때 사용한다.
+        abi.encodePacked 메서드의 경우 컨트랙트를 호출하지 않고 매개변수가 자료형에 맞춰 필요한 최소한의 공간만을 사용한다.
+        abi.encodeWithSignature 메서드의 경우 abi.encode 메서드와 유사하지만 첫 번째 매개변수로 함수의 서명을 전달 받는다. 선택자를 계산하길 원하지 않고 해당 서명을 알고 있을 때 사용한다.
+        abi.ecnodeWithSelector 메서드의 경우 abi.encode 메서드와 유사하지만 첫 번째 매개변수로 선택자를 전달 받는다. abi.encodeWithSignature 메서드와 매우 유사하다.
+
+        앞서 여러 개의 함수가 존재하기 때문에 ABI를 활용하여 어떤 함수를 호출할 지 지정한다고 언급했다. 솔리디티에서는 함수 선택자를 이용하여 함수를 구별한다.
+        함수 서명의 keccak256 해시값의 앞 4바이트 calldata를 의미하며 해당 부분을 통해 함수를 구별할 수 있다.
+        이때 값이 충돌하는 경우 오류를 반환하고 어떠한 바이트코드로 생성하지 않아서 컴파일러 단에서 함수 선택자가 겹치지 않음을 보장해준다.
+        함수는 함수의 이름과 매개변수의 자료형을 통해 Keccak-256 알고리즘을 사용하여 해싱되는데 해당 부분을 통해 생성된 앞 4바이트가 곧 함수의 서명이며 동시에 함수의 선택자이다.
+
+        예를 들어 아래 createRandomZombie() 함수의 경우 함수이름인 createRandomZombie 및 매개변수로 전달되는 자료형 string이 해싱값으로 사용된다.
+        createRandomZombie(string)이 keccak-256 알고리즘을 통해 해싱되어 7bff0a01...와 같은 값을 만들고 4바이트 값인 7bff0a01이 함수의 서명이자 선택자로 사용된다.
+        컴파일링된 바이트코드를 ZombieFactory.json 파일에서 확인해보면 7bff0a01 바이트코드가 존재하는 걸 확인해볼 수 있다.
         */
-        uint rand = uint(keccak256(abi.encode(_str)));
+        uint rand = uint(keccak256(abi.encodePacked(_str)));
         return rand % dnaModulus;
     }
 
