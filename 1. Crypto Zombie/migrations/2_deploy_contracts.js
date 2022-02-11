@@ -1,4 +1,7 @@
-// artifacts.require() 메서드를 통해 컨트랙트의 정보를 획득한다.
+/*
+artifacts.require() 메서드를 통해 컨트랙트의 정보를 획득한다.
+이때 파일 이름이 아닌 해당 컨트랙트의 이름을 사용해야 한다.
+*/
 const Zombie = artifacts.require("ZombieFactory");
 
 module.exports = function (deployer) {
