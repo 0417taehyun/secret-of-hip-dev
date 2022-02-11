@@ -1,5 +1,5 @@
 // artifacts.require() 메서드를 통해 컨트랙트의 정보를 획득한다.
-const Zombie = artifacts.require("Zombie");
+const Zombie = artifacts.require("ZombieFactory");
 
 module.exports = function (deployer) {
   /*
