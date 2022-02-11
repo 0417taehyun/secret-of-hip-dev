@@ -12,7 +12,7 @@ module.exports = {
     // development는 개발용으로 이 외에도 Ropsten, private 등이 존재한다.
     development: {
       host: "127.0.0.1",
-      port: 7545, // 표준 이더리움 포트 번호다.
+      port: 8545, // 표준 이더리움 포트 번호다.
       network_id: "*", // 이더리움 네트워크 고유 아이디를 의미하며 사설 네트워크를 사용하기 위해 애스터리스크(*) 값을 사용한다.
     },
   },
