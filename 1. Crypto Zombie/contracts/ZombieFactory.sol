@@ -12,7 +12,7 @@ pragma solidity >=0.5.0 <0.9.0;
 솔리디티 코드는 컨트랙트 안에 싸여 있다.
 컨트랙트는 이더리움 애플리케이션의 기본적인 구성 요소로 모든 변수와 함수는 어느 한 컨트랙트에 속해야 한다.
 */
-contract ZombieFactory {
+contract Factory {
     /*
     상태 변수는 컨트랙트 저장소에 영구적으로 저장된다. 다시 말해 이더리움 블록체인에 기록되는 것이다.
     이것은 데이터베이스에 데이터가 저장되는 것과 동일하다.
@@ -121,7 +121,7 @@ contract ZombieFactory {
 
     이외에도 Calldata 종류가 존재하는데 외부함수로만 이용이 가능하다. memory와 유사하다.
     */
-    function _createZombie(string memory _name, uint _dna) private {
+    function _createZombie(string memory _name, uint _dna) internal {
         zombies.push(Zombie(_dna, _name));
         // 기존에는 push() 메서드의 반환값이 해당 배열의 길이였지만 0.6.0 버전 이후 길이를 반환하지 않기 때문에 별도의 length 메서드를 따로 써줘야 한다.
         uint id = zombies.length - 1;
@@ -196,6 +196,13 @@ contract ZombieFactory {
 
     function createRandomZombie(string memory _name) public {
         uint randDna = _generateRandomDna(_name);
+
+        /*
+        require은 if 조건문과 유사하게 조건을 통해 해당 조건이 참인지 판별하는 구문이지만 에러 핸들링에 더 가깝다.
+        왜냐하면 if 조건문을 사용할 경우 만약 조건이 거짓이면 다음 구문으로 넘어가서 프로그램이 계속 실행되지만 require은 오류를 일으키기 때문이다.
+        */
+        require(ownerZombieCount[msg.sender] == 0);
+
         _createZombie(_name, randDna);
     }
 }
