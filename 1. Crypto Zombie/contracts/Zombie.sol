@@ -70,6 +70,13 @@ contract ZombieFactory {
     */
     event NewZombie(uint zombieId, string name, uint dna);
 
+    /*
+    address 객체는 은행 계좌와 동일하다고 생각하면 편하다. 따라서 개별 사용자별로 고유한 계정인 address 객체를 가지고 해당 address를 통해 Ether를 주고 받을 수 있다.
+    mapping의 경우 key-value 형태의 자료형을 의미하며 앞에 정의한 자료형이 key가 되고 뒤에 정의한 자료형이 value가 된다.
+    */
+    mapping (uint => address) public zombieToOwner;
+    mapping (address => uint) ownerZombieCount;
+
     /* 
     함수의 매개변수의 경우 언더스코어(_)로 시작을 하여 전역 변수와 구별하는 게 관례이다.
     이때 함수는 기본적으로 public으로 선언이 되어 있는데 private 키워드를 사용해서 private하게 바꿀 수 있다. (public인 경우도 명시적으로 작성을 해줘야 한다.)
@@ -118,6 +125,16 @@ contract ZombieFactory {
         zombies.push(Zombie(_dna, _name));
         // 기존에는 push() 메서드의 반환값이 해당 배열의 길이였지만 0.6.0 버전 이후 길이를 반환하지 않기 때문에 별도의 length 메서드를 따로 써줘야 한다.
         uint id = zombies.length - 1;
+
+        /*
+        솔리디티에는 모든 함수에서 사용할 수 있는 글로벌 변수 msg.sender가 존재한다. 이때 msg.sender는 해당 함수를 호출한 사용자의 address 객체를 반환한다.
+        솔리디티에서 함수를 실행시키기 위해서는 반드시 외부의 호출이 필요하다. 따라서 누군가 해당 함수를 호출하지 않는 경우 콘트랙트는 블록체인 내부에서 계속 대기하고 있게 된다.
+
+        msg.sender는 블록체인의 보안과 연결되어 있다. 누군가 다른 사람의 데이터를 변경하는 유일한 방법은 이더리움 주소와 연관된 비밀 키를 훔치는 방법 뿐이다.
+        */
+        zombieToOwner[id] = msg.sender;
+        ownerZombieCount[msg.sender]++;
+
         /*
         emit 키워드를 사용하여 명시적으로 이벤트를 발생시키는 걸 알려준다.
         해당 코드를 통해 _createZombie() 함수가 실행되었을 때 아래 NewZombie() 실행된다.
