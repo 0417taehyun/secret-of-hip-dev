@@ -89,11 +89,21 @@ interface KittyInterface {
 솔리디티에서는 아래와 같이 ChildContract is ParentContract 형태로 특정 컨트랙트를 상속 받을 수 있다.
 상속 받은 컨트랙트는 부모 컨트랙트에 정의된 public 함수를 사용할 수 있다.
 */
-contract Feeding is Factory {
+contract ZombieFeeding is ZombieFactory {
 
     // 아래와 같이 address를 통해 KittyInterface를 사용할 수 있다.
-    address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
-    KittyInterface kittyContract = KittyInterface(ckAddress);
+    // address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
+    // KittyInterface kittyContract = KittyInterface(ckAddress);
+
+    /*
+    솔리디티의 경우 한 번 배포한 이후 배포된 부분을 절대 수정할 수 없다. 보안 및 안정성 관련된 부분을 고려하기 때문이다.
+    따라서 한 번 배포되어 정상적으로 컨트랙트가 실행될 경우 이는 어떤 일이 있어도 해당 코드는 오류 없이 정상적으로 실행된다는 걸 보장한다.
+    */
+    KittyInterface kittyContract;
+
+    function setKittyContractAddress(address _address) external {
+        kittyContract = KittyInterface(_address);
+    }
 
     function feeAndMuliply(uint _zombieId, uint _targetDna, string memory _species) public {
         require(zombieToOwner[_zombieId] == msg.sender);
