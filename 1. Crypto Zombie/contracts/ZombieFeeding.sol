@@ -105,9 +105,19 @@ contract ZombieFeeding is ZombieFactory {
         kittyContract = KittyInterface(_address);
     }
 
-    function feeAndMuliply(uint _zombieId, uint _targetDna, string memory _species) public {
+    function _triggerCooldown(Zombie storage _zombie) internal {
+        _zombie.readyTime = uint32(block.timestamp + cooldownTime);
+    }
+
+    function _isReady(Zombie storage _zombie) internal view returns (bool) {
+        return (_zombie.readyTime <= block.timestamp);
+    }
+
+    function feeAndMuliply(uint _zombieId, uint _targetDna, string memory _species) internal {
         require(zombieToOwner[_zombieId] == msg.sender);
         Zombie storage myZombie = zombies[_zombieId];
+
+        require(_isReady(myZombie));
 
         _targetDna %= dnaModulus;
         uint newDna = (myZombie.dna + _targetDna) / 2;
@@ -125,9 +135,10 @@ contract ZombieFeeding is ZombieFactory {
         external 키워드의 경우 public 함수이지만 오로지 콘트랙트 외부에서만 호출될 수 있다.
         */
         _createZombie("NoName", newDna);
+        _triggerCooldown(myZombie);
     }
 
-    function feedOnKitty(uint _zombieId, uint _kittyId) public {
+    function feedOnKitty(uint _zombieId, uint _kittyId) public onlyOwner {
         uint kittyDna;
         (,,,,,,,,,kittyDna) = kittyContract.getKitty(_kittyId);
         feeAndMuliply(_zombieId, kittyDna, "kitty");
