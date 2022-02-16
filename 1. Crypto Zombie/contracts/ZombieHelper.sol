@@ -29,6 +29,11 @@ contract ZombieHelper is ZombieFeeding {
 
     이때 유의할 점은 view 함수가 외부에서 호출 될 때만 Gas 비용을 제출하지 않는다는 점이다.
     만약 동일한 콘트랙트 내부에서 다른 함수가 view 함수를 호출할 경우 이더리움 상에서 다른 함수가 트랜잭션을 생성하기 때문에 view 함수 또한 Gas 비용을 지불해야 한다.
+
+    일반 함수, view 함수, pure 함수가 헷갈려 다시 한 번 정리해보고자 한다.
+    일반 함수의 경우 storage 상태 값을 읽을 수도 있고 그 값을 변경할 수도 있다.
+    view 함수의 경우 storage 상태 값을 읽을 수만 있고 그 값을 변경할 수 없다.
+    pure 함수의 경우 storage 상태 값을 읽을 수도 없도 그 값을 변경할 수도 없다.
     */
     function getZombiesByOwner(address _owner) external view returns (uint[] memory) {
         
