@@ -4,11 +4,26 @@ pragma solidity >= 0.5.0 < 0.9.0;
 import "./ZombieFeeding.sol";
 
 contract ZombieHelper is ZombieFeeding {
+
+    /*
+    이더(Ehter)의 경우 아래와 같이 ether 키워드를 붙인다.
+    이때 아래와 같이 constant 키워드를 붙여 해당 변수를 상수로 만들 수 있다.
+    */
+    uint public constant levelUpFee = 0.001 ether;
     
     // modifier에도 매개변수를 전달할 수 있다.
     modifier aboveLevel(uint _level, uint _zombieId) {
         require(zombies[_zombieId].level >= _level);
         _;
+    }
+
+    /*
+    이더리움 위에는 트랜잭션 데이터는 물론 컨트랙트 코드와 이더(Ether) 모두 존재하기 때문에 payable 키워드를 통해
+    해당 함수가 일정량의 이더를 지불하게 만들 수 있다.
+    */
+    function levelUp(uint _zombieId) external payable {
+        require(msg.value == levelUpFee);
+        zombies[_zombieId].level++;
     }
 
     // calldata는 memory와 유사하지만 external 함수에서만 가능하다.
@@ -34,6 +49,8 @@ contract ZombieHelper is ZombieFeeding {
     일반 함수의 경우 storage 상태 값을 읽을 수도 있고 그 값을 변경할 수도 있다.
     view 함수의 경우 storage 상태 값을 읽을 수만 있고 그 값을 변경할 수 없다.
     pure 함수의 경우 storage 상태 값을 읽을 수도 없도 그 값을 변경할 수도 없다.
+
+    추가적으로 pure 함수 또한 view 함수와 마찬가지로 외부에서만 호출될 경우 별도의 Gas 비용이 발생하지 않는다.
     */
     function getZombiesByOwner(address _owner) external view returns (uint[] memory) {
         
