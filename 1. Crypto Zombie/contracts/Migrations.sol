@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 <0.9.0;
+pragma solidity ^0.8.0;
 
 /*
 아래는 Truffle 공식 문서에 작성되어 있는 Migrations에 관한 설명이다.

@@ -7,7 +7,7 @@
 굳이 작성하지 않아도 되는, 오류가 아닌 주의사항이지만 0.6.8 버전 이후 생긴 방식이기 때문에 작성하는 걸 추천한다.
 */
 // SPDX-License-Identifier: MIT
-pragma solidity >= 0.5.0 < 0.9.0;
+pragma solidity ^0.8.0;
 
 import "./Ownable.sol";
 

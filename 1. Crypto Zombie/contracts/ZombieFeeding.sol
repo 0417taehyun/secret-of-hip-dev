@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >= 0.5.0 < 0.9.0;
+pragma solidity ^0.8.0;
 
 // 아래와 같이 다른 솔리디티 파일을 임포트해서 사용할 수 있다.
 import "./ZombieFactory.sol";
