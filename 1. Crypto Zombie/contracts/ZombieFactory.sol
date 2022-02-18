@@ -77,6 +77,8 @@ contract ZombieFactory is Ownable {
         */
         uint32 level;
         uint32 readyTime;
+        uint16 winCount;
+        uint16 lossCount;
     }
 
     /*
@@ -174,7 +176,7 @@ contract ZombieFactory is Ownable {
         다시 말해 2038년에 사인 비트의 값이 변화되어 음수로 바뀌면서 원하는 값이 안 나올 수 있다. 즉 오버플로우가 발생한다는 것이다.
         따라서 uint64를 사용할 수도 있지만 사용자는 그만큼 Gas를 더 지불해야 한다.
         */
-        zombies.push(Zombie(_dna, _name, 1, uint32(block.timestamp + cooldownTime)));
+        zombies.push(Zombie(_dna, _name, 1, uint32(block.timestamp + cooldownTime), 0, 0));
 
         // 기존에는 push() 메서드의 반환값이 해당 배열의 길이였지만 0.6.0 버전 이후 길이를 반환하지 않기 때문에 별도의 length 메서드를 따로 써줘야 한다.
         uint id = zombies.length - 1;
