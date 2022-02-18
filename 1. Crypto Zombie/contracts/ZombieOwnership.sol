@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./ERC721.sol";
 import "./ZombieAttack.sol";
 
 /*
@@ -13,6 +14,26 @@ import "./ZombieAttack.sol";
 
 */
 
-contract ZombieOwnership is ZombieAttack {
-    
+contract ZombieOwnership is ZombieAttack, ERC721 {
+
+    /*
+    원래 balanceOf는 남아 있는 토큰의 양을 반환한다.
+    여기서 토큰은 곧 좀비를 의미하기 때문에 좀비의 수를 반환하는 ownerZombieCount 매핑을 활용한다.
+
+    이때 uint256 자료형은 uint와 동일하다.
+    */
+    function balanceOf(address _owner) external view returns (uint256) {
+        return ownerZombieCount[_owner];
+    }
+
+    /*
+    원래 ownerOf는 토큰의 주인을 반환한다.
+    여기서 토큰은 곧 좀비이고 _tokenId는 곧 _zombieId를 의미하기 때문에 zombieToOwner 매핑을 활용한다.
+
+    기존 ZombieFeeding.sol 파일 내부에 modifier로 ownerOf가 존재했다.
+    ERC721를 상속 받아 사용하기 때문에 기존의 modifier인 ownerOf의 이름을 onlyOwenrOf로 바꾸고 이를 사용하던 함수들에 쓰여있던 이름도 바꿔야 한다.
+    */
+    function ownerOf(uint256 _tokenId) external view returns (address) {
+        return zombieToOwner[_tokenId];
+    }
 }
