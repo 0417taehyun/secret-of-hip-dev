@@ -62,13 +62,11 @@ contract ZombieHelper is ZombieFeeding {
     }
 
     // calldata는 memory와 유사하지만 external 함수에서만 가능하다.
-    function changeName(uint _zombieId, string calldata _newName) external aboveLevel(2, _zombieId) {
-        require(zombieToOwner[_zombieId] == msg.sender);
+    function changeName(uint _zombieId, string calldata _newName) external ownerOf(_zombieId) aboveLevel(2, _zombieId) {
         zombies[_zombieId].name = _newName;
     }
 
-    function changeDna(uint _zombieId, uint _newDna) external aboveLevel(20, _zombieId) {
-        require(zombieToOwner[_zombieId] == msg.sender);
+    function changeDna(uint _zombieId, uint _newDna) external ownerOf(_zombieId) aboveLevel(20, _zombieId) {
         zombies[_zombieId].dna = _newDna;
     }
 
