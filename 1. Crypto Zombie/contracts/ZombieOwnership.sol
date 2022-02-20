@@ -26,6 +26,13 @@ contract ZombieOwnership is ZombieAttack, ERC721 {
         return ownerZombieCount[_owner];
     }
 
+    function _transfer(address _from, address _to, uint256 _tokenId) private {
+        ownerZombieCount[_from]--;
+        ownerZombieCount[_to]++;
+        zombieToOwner[_tokenId] = _to;
+        emit Transfer(_from, _to, _tokenId);
+    }
+
     /*
     원래 ownerOf는 토큰의 주인을 반환한다.
     여기서 토큰은 곧 좀비이고 _tokenId는 곧 _zombieId를 의미하기 때문에 zombieToOwner 매핑을 활용한다.
