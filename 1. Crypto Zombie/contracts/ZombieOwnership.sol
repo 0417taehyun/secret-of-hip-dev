@@ -16,6 +16,8 @@ import "./ZombieAttack.sol";
 
 contract ZombieOwnership is ZombieAttack, ERC721 {
 
+    mapping (uint => address) zombieApprovals;
+
     /*
     원래 balanceOf는 남아 있는 토큰의 양을 반환한다.
     여기서 토큰은 곧 좀비를 의미하기 때문에 좀비의 수를 반환하는 ownerZombieCount 매핑을 활용한다.
@@ -42,5 +44,9 @@ contract ZombieOwnership is ZombieAttack, ERC721 {
     */
     function ownerOf(uint256 _tokenId) external view returns (address) {
         return zombieToOwner[_tokenId];
+    }
+
+    function transferFrom(address _from, address _to, uint _tokenId) external payable {
+        require(zombieToOwner[_tokenId] == msg.sender || zombieApprovals[_tokenId] == msg.sender);
     }
 }
