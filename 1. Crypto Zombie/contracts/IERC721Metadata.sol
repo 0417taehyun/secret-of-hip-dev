@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "./IERC721.sol";
 
-
 // ERC721의 표준 NFT에서 선택적인 메타데이터를 위한 확장 인터페이스다.
 interface IERC721Metadata is IERC721 {
 

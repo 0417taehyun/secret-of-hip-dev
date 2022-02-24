@@ -15,12 +15,13 @@ interface IERC721 is IERC165 {
     // 
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
-    
+    // owner 계정에 존재하는 토큰의 수를 반환한다.
     function balanceOf(address owner) external view returns (uint256 balance);
 
-
+    // 
     function ownerOf(uint256 tokenId) external view returns (address owner);
 
+    // 
     function safeTransferFrom(
         address from,
         address to,
