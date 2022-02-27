@@ -72,6 +72,9 @@ abstract contract Ownable is Context {
     그리고 만약 해당 컨트랙트의 소유자가 맞을 경우 소유권을 포기하지 않았는 지 확인한다.
     소유권을 포기했다면 "Ownalbe: new owner is the zero address"를 반환하다.
     정상적으로 본인이 소유한 컨트랙트인 경우 소유권을 새로운 소유자에게 이전한다.
+
+    address의 값이 0인 경우 burning이라 부른다.
+    아무도 해당 address의 private key를 가지고 있지 않고 회복불가능한 걸 의미한다.
     */
     function transferOwnership(address newOwner) public virtual onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");

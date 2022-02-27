@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// 
+// strins 자료형 관련 라이브러리다.
 library Strings {
     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
 

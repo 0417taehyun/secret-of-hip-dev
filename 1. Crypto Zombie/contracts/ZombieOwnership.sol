@@ -2,7 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "./ERC721.sol";
+import "./SafeMath.sol";
 import "./ZombieAttack.sol";
+
 
 /*
 원래 ERC20 토큰을 사용하여 transferFrom 등의 정형화된 메서드를 사용한다.
@@ -15,6 +17,8 @@ import "./ZombieAttack.sol";
 */
 
 contract ZombieOwnership is ZombieAttack, ERC721 {
+
+    using SafeMath for uint256;
 
     mapping (uint => address) zombieApprovals;
 
@@ -46,8 +50,15 @@ contract ZombieOwnership is ZombieAttack, ERC721 {
         return zombieToOwner[_tokenId];
     }
 
+
     function transferFrom(address _from, address _to, uint _tokenId) external payable {
         require(zombieToOwner[_tokenId] == msg.sender || zombieApprovals[_tokenId] == msg.sender);
         _transfer(_from, _to, _tokenId);
+    }
+
+
+    function approve(address _approved, uint256 _tokenId) external payable onlyOwnerOf(_tokenId) {
+        zombieApprovals[_tokenId] = _approved;
+        emit Approval(msg.sedner, _approved, _tokenId);
     }
 }
